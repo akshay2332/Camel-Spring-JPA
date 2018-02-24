@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
+  <persistence-unit name="postgresPU">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>com.test.entities.PostgresEntity</class>
+    <class>com.test.entities.UserEntity</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+      <property name="javax.persistence.jdbc.url" value="jdbc:postgresql://localhost:5432/akshay"/>
+      <property name="javax.persistence.jdbc.user" value="postgres"/>
+      <property name="javax.persistence.jdbc.password" value="postgres"/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL81Dialect"/>
+    </properties>
+  </persistence-unit>
+  <persistence-unit name="cassandraPU">
+    <provider>com.impetus.kundera.KunderaPersistence</provider>
+    <class>com.test.entities.CassEntity</class>
+    <exclude-unlisted-classes>true</exclude-unlisted-classes>
+    <properties>
+      <property name="kundera.nodes" value="localhost"/>
+      <!--      <property name="kundera.port" value="9042"/>-->
+      <property name="kundera.port" value="9160"/>
+      <property name="kundera.keyspace" value="people"/>
+      <property name="kundera.dialect" value="pelops"/>
+      <property name="kundera.ddl.auto.prepare" value="update"/>
+      <property name="kundera.client.lookup.class" value="com.impetus.client.cassandra.pelops.PelopsClientFactory"/>
+      <!--      <property name="kundera.client.lookup.class" value="com.impetus.client.cassandra.thrift.ThriftClientFactory"/>
+        -->
+      <!--            <property name="kundera.cache.provider.class" value="com.impetus.kundera.cache.ehcache.EhCacheProvider"/>-->
+      <!--	    <property name="kundera.cache.config.resource" value="/ehcache-test.xml"/> -->
+      <!--      <property name="jboss.as.jpa.managed" value="false"/>-->
+    </properties>
+  </persistence-unit>
+</persistence>

@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
+                            http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+    <import resource="myRoutes.xml" />
+    <import resource="databaseRoutes.xml" />
+    
+    <import resource="integration-context-spring-data-jpa.xml" />
+    
+    <bean id="RestletComponent" class="org.restlet.Component" />
+    <bean id="RestletComponentService" class="org.apache.camel.component.restlet.RestletComponent">
+        <constructor-arg index="0">
+            <ref bean="RestletComponent" />
+        </constructor-arg>
+    </bean>
+    
+    <camelContext xmlns="http://camel.apache.org/schema/spring">
+        <!-- refer to a given route to be used -->
+        <routeContextRef ref="serviceRoutes" />
+        <routeContextRef ref="databaseRoutes" />
+        
+        <onException>
+            <exception>com.test.exception.ValidationException</exception>
+            <setBody>
+                <constant>Invalid Request</constant>
+            </setBody>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>400</constant>
+            </setHeader>
+        </onException>
+        
+        
+        <onException>
+            <exception>com.test.exception.InvalidUserException</exception>
+            <setBody>
+                <constant>Invalid User</constant>
+            </setBody>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>401</constant>
+            </setHeader>
+        </onException>
+        
+        
+        <onException>
+            <exception>java.lang.Exception</exception>
+            <setBody>
+                <constant>Internal server Error</constant>
+            </setBody>
+            <setHeader headerName="CamelHttpResponseCode">
+                <constant>500</constant>
+            </setHeader>
+        </onException>
+    </camelContext>
+    
+    <!--databse access repositories DAO-->
+    <bean id="cassRepo" class="com.test.repository.CassReposirtory"/>
+    <bean id="possRepo" class="com.test.repository.PossRepository"/>
+    
+</beans>

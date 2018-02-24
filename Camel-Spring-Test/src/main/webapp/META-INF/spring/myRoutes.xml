@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+    <routeContext id="serviceRoutes" xmlns="http://camel.apache.org/schema/spring">
+        
+        
+        <!-- GET services -->
+        <route id="get-details">
+            <from uri="restlet:/getDetails?restletMethods=GET"/>
+            <to uri="direct:restlet-from"/>
+        </route>
+        
+        <route id="direct-restlet">
+            <from uri="direct:restlet-from"/>
+            <setBody>
+                <constant>Successful</constant>
+            </setBody>
+        </route>
+        
+        <route id="access-cassandra">
+            <from uri="restlet:/getCass?restletMethods=GET"/>
+            <to uri="direct:restlet-cass"/>
+        </route>
+        
+        <route id="access-postgres">
+            <from uri="restlet:/getPoss?restletMethods=GET"/>
+            <to uri="direct:restlet-poss"/>
+        </route>
+                
+        <!--POST services-->        
+        <route id="login-user">
+            <from uri="restlet:/loginUser?restletMethods=POST"/>
+            <to uri="direct:login-user"/>
+        </route>
+        
+        <route id="register-user-restlet">
+            <from uri="restlet:/registerUser?restletMethods=POST"/>
+            <to uri="direct:register-user"/>
+        </route>
+        
+                                        
+            
+    </routeContext>
+
+</beans>

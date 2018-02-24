@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.3.xsd http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring.xsd
+">
+
+    <routeContext id="databaseRoutes" xmlns="http://camel.apache.org/schema/spring">
+    
+        <route id="postgres-database">
+            <from uri="direct:restlet-poss"/>
+            <bean ref="possRepo" method="methodPoss"/>
+        </route>
+       
+        <route id="apache cassandra">
+            <from uri="direct:restlet-cass"/>
+            <bean ref="cassRepo" method="methodCass"/>
+        </route> 
+    
+        <route id="">
+            <from uri="direct:login-user" />
+            <unmarshal>
+                <json library="Jackson" unmarshalTypeName="com.test.model.LoginModel" /> 
+            </unmarshal>
+            <process ref="validateLoginReq" />
+            <to uri="direct:check-login-user-db"/>
+        </route>
+        
+        <route id="check-login-user-db">
+            <from uri="direct:check-login-user-db"/>
+            <bean ref="possRepo" method="checkLogin" />
+        </route>
+        
+        <route id="register-user">
+            <from uri="direct:register-user"/>
+            <setBody>
+                <constant>Register Request</constant>
+            </setBody>
+        </route>
+        
+            
+    </routeContext>
+    
+    <bean id="validateLoginReq" class="com.test.processor.ValidateLoginReq" />
+    
+</beans>

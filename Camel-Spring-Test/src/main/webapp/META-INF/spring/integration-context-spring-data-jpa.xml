@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+  <beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+                           http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+                           http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa.xsd
+                           http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.3.xsd">
+  
+  
+<!--    <context:component-scan base-package="org.springframework.data.cassandra" />-->
+
+   
+    <jpa:repositories base-package="com.test.repository" entity-manager-factory-ref="entityManagerCass" 
+    transaction-manager-ref="trasactionManagerCass"/>
+
+    <bean id="entityManagerCass"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+	<property name="persistenceUnitName" value="cassandraPU" />
+        <property name="packagesToScan" value="com.test.entities"/>
+        <property name="persistenceUnitManager">
+            <bean class="org.springframework.data.jpa.support.MergingPersistenceUnitManager">
+                <property name="persistenceXmlLocations">
+                    <list>
+                        <value>classpath*:/META-INF/persistence.xml</value>
+                    </list>
+                </property>
+            </bean>
+        </property>    
+    </bean>
+    
+    
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager"
+          id="trasactionManagerCass">
+        <property name="entityManagerFactory" ref="entityManagerCass"/>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+       
+    </bean>
+      
+      
+    <jpa:repositories base-package="com.test.repository"
+                      entity-manager-factory-ref="trainingEntityManagerFactory"
+                      transaction-manager-ref="integrationTransactionManager"
+            />
+
+    <tx:annotation-driven transaction-manager="integrationTransactionManager" />
+
+    <bean id="trainingEntityManagerFactory"
+          class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="packagesToScan" value="com.test.entities"/>
+        <property name="persistenceUnitName" value="postgresPU"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+                <property name="generateDdl" value="true"/>
+                <property name="showSql" value="false"/>
+                <property name="databasePlatform" value="org.hibernate.dialect.PostgreSQL81Dialect"/>
+            </bean>
+        </property>
+        <property name="jpaProperties">
+            <value>
+                hibernate.cache.use_second_level_cache = false
+                hibernate.cache.use_query_cache = false
+                hibernate.generate_statistics = false
+                hibernate.hbm2ddl.auto = update
+            </value>
+        </property>
+        <property name="persistenceUnitManager">
+            <bean class="org.springframework.data.jpa.support.MergingPersistenceUnitManager">
+                <property name="persistenceXmlLocations">
+                    <list>
+                        <value>classpath*:/META-INF/persistence.xml</value>
+                    </list>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+    <bean class="org.springframework.orm.jpa.JpaTransactionManager"
+          id="integrationTransactionManager">
+        <property name="entityManagerFactory" ref="trainingEntityManagerFactory"/>
+        <property name="jpaDialect">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaDialect"/>
+        </property>
+    </bean>
+
+</beans>
